@@ -9,6 +9,8 @@ This page will contain brief descriptions of the projects that I undertake with 
 
 ## [Secure Office Network Deployment](/_projects/secure-office-network-deployment/)
 
+[Secure Office Network Deployment](./_projects/secure-office-network-deployment.html).
+
 ### Project Overview:
 - **Network Planning & Setup**: Designed and built a network with two departments (HR and IT) using Cisco Packet Tracer.
 - **VLAN Configuration**: Configured VLANs for traffic isolation and set up routing between them.
