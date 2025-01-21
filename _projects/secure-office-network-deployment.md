@@ -1,6 +1,7 @@
 ---
-layout: post
-permalink: "/_projects/secure-office-network-deployment.md"
+layout: page
+title: "Secure Office Network Deployment"
+permalink: /_projects/secure-office-network-deployment
 ---
 
 This is a project where I designed and secured a network for a small office environment using Cisco Packet Tracer.
