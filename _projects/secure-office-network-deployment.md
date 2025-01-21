@@ -1,9 +1,7 @@
 ---
 layout: post
-title: Blogging Like a Hacker
+title: # Secure Office Network Deployment
 ---
-
-# Secure Office Network Deployment
 
 This is a project where I designed and secured a network for a small office environment using Cisco Packet Tracer.
 
