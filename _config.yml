@@ -3,3 +3,5 @@ description: Welcome to my Portfolio! Here I''ll be posting my projects and docu
 google_analytics:
 theme: jekyll-theme-hacker
 url: "https://fahim602.github.io"
+include:
+  - _projects
