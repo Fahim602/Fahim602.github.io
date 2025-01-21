@@ -9,7 +9,7 @@ This page will contain brief descriptions of the projects that I undertake with 
 
 ## [Secure Office Network Deployment](/_projects/secure-office-network-deployment/)
 
-[Secure Office Network Deployment](fahim602/_projects/secure-office-network-deployment.md).
+[Secure Office Network Deployment](/Fahim602/Fahim602.github.io/blob/main/_projects/secure-office-network-deployment.md).
 
 ### Project Overview:
 - **Network Planning & Setup**: Designed and built a network with two departments (HR and IT) using Cisco Packet Tracer.
