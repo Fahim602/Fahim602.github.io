@@ -9,7 +9,11 @@ This project showcases the design, configuration, and security of a small office
 ## Table of Contents
 - [1. Network Planning](#1-network-planning)
 - [2. Building the Network](#2-building-the-network)
+  - [2.1 Physical Setup](#21-physical-setup)
+  - [2.2 Configuring Basic Networking](#22-configuring-basic-networking)
 - [3. VLAN Configuration and Inter-VLAN Routing](#3-vlan-configuration-and-inter-vlan-routing)
+  - [3.1 VLAN Configuration](#31-vlan-configuration)
+  - [3.2 Inter-VLAN Routing](#32-inter-vlan-routing)
 
 ## Objectives:
 - Network Planning & Setup
@@ -122,13 +126,11 @@ Switch(config-if)# exit                     # Exit interface config mode
 Below are the outputs of the commands `show vlan brief` (*Figure 3.1*) and `show interfaces trunk` (*Figure 3.2*) which verify the creation of the VLAN and the assignment of the trunk port respectively:
 
 ![VLAN Brief](/assets/images/VLAN-brief.png)<br>
-*Figure 3.1*
-
-> Figure 3.1 confirms that VLAN 10 has been created and assigned to the appropriate ports which applies to VLAN 20 and 30 as well
+*Figure 3.1: Verification of VLAN configuration using `show vlan brief`*
 
 ![Trunk](/assets/images/trunk.png)<br>
-*Figure 3.2*
-
-> Figure 3.2 confims that the trunk port Fa3/1 has been correctly configured and is carrying traffic for all VLANs
+*Figure 3.2: Verification of Trunk configuration using `show interfaces trunk`*
 
 Now that the VLANs have been successfully created and configured, the next step is to configure inter-vlan routing to enable communication between the departments.
+
+### Inter-VLAN Routing
