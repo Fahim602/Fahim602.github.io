@@ -55,10 +55,10 @@ IT: 192.168.1.x  Gateway: 192.168.1.1
 Management: 192.168.2.x  Gateway: 192.168.2.1
 HR: 192.168.3.x  Gateway: 192.168.3.1
 
-![IP Config](/assets/images/IP-config)
+![IP Config](/assets/images/IP-config.png)<br>
 *Figure 2.2: Show's IP configuration of a PC within IT department*
 
-![IT Ping](/assets/images/IT-ping.png)
+![IT Ping](/assets/images/IT-ping.png)<br>
 *Figure 2.3: Shows a successful ping between 2 devices within the IT subnet*
 
 ### 2.3 VLAN Configuration
@@ -104,11 +104,11 @@ Switch(config-if)# exit
 
 ```
 
-Below are the outputs of the commands `show vlan brief`(*Figure 2.4*) and `show interfaces trunk`(*Figure 2.5*) which verify the creation of the VLAN and the assignment of the trunk port respectively:
+Below are the outputs of the commands `show vlan brief` (*Figure 2.4*) and `show interfaces trunk` (*Figure 2.5*) which verify the creation of the VLAN and the assignment of the trunk port respectively:
 
-![VLAN Brief](/assets/images/VLAN-brief)
+![VLAN Brief](/assets/images/VLAN-brief.png)<br>
 *Figure 2.4*
 
-![Trunk](/assets/images/trunk)
+![Trunk](/assets/images/trunk.png)<br>
 *Figure 2.5*
 
