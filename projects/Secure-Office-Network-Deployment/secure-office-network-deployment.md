@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Secure Office Network Deployment"
-permalink: /projects/secure-office-network-deployment
+permalink: /projects/Secure-Office-Network-Deployment/secure-office-network-deployment
 ---
 
 This project showcases the design, configuration, and security of a small office network using Cisco Packet Tracer. The goal was to create a functional and secure network that simulates real-world scenarios while demonstrating key networking and cybersecurity skills.
@@ -23,7 +23,7 @@ Objective: Design the initial layout of the network
 
 A network diagram was created to represent a small office network with three departments: management, HR and IT.
 
-![Network Plan]("projects\Secure-Office-Network-Deployment\assets\images\network-plan.png")
+![Network Plan](/assets/images/network-plan.png)
 *Figure 1: Network Diagram showing the planned layout of the office network*
 
 As displayed in figure 1, the network has 3 switches connected to a router, each switch is assigned to a department and has 2 PC's and a server per switch. The departments each have their own VLAN, subnets assigned as follows:
