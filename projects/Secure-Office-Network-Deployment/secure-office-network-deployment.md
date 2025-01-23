@@ -26,7 +26,7 @@ A network diagram was created to represent a small office network with three dep
 ![Network Plan](/assets/images/network-plan.png)
 *Figure 1: Network Diagram showing the planned layout of the office network*
 
-As displayed in figure 1, the network has 3 switches connected to a router, each switch is assigned to a department and has 2 PC's and a server per switch. The departments each have their own VLAN, subnets assigned as follows:
+As displayed in figure 1, the network has 3 switches connected to a router, each switch is assigned to a department and has 2 PC's and a server per switch. The departments each have their own VLAN, subnets assigned as follows:  
 IT: 192.168.1.0/24  
 Management: 192.168.2.0/24  
 HR: 192.168.3.0/24
@@ -35,7 +35,7 @@ HR: 192.168.3.0/24
 
 **Objective: Create the physical and logical setup of the network in Packet Tracer**
 
-This section covers the physical setup of the network in packet tracer, the logical configuration of devices and VLAN's and testing intra/inter-VLAN communication.
+This section covers the physical setup of the network in packet tracer and verifying intra-subnet communication.
 
 ### 2.1 Physical Setup
 
@@ -61,15 +61,20 @@ HR: 192.168.3.x  Gateway: 192.168.3.1
 ![IT Ping](/assets/images/IT-ping.png)<br>
 *Figure 2.3: Shows a successful ping between 2 devices within the IT subnet*
 
-### 2.3 VLAN Configuration
+## 3 VLAN Configuration and Inter-VLAN Routing
+ 
+**Objective: Segment traffic using VLANs and enable communication between VLANs**
+
+### 3.1 VLAN Configuration
 
 **Objective: Segment the network into three VLANs for IT, Management and HR to improve traffic isolation**
 
 Configuration Details:  
 VLAN's were configured on their respective switches:
-- IT (VLAN 10) Ports FastEthernet0/1, FastEthernet 1/1, FastEthernet2/1  
-- Management (VLAN 20) Ports FastEthernet0/1, FastEthernet 1/1, FastEthernet2/1  
-- HR (VLAN 30) Ports FastEthernet0/1, FastEthernet 1/1, FastEthernet2/1  
+- IT (VLAN 10): Ports FastEthernet0/1, FastEthernet 1/1, FastEthernet2/1  
+- Management (VLAN 20): Ports FastEthernet0/1, FastEthernet 1/1, FastEthernet2/1  
+- HR (VLAN 30): Ports FastEthernet0/1, FastEthernet 1/1, FastEthernet2/1  
+
 Trunk Ports: FastEthernet3/1 on each router, configured to carry traffic for all VLAN's to the router
 
 VLAN Creation:
@@ -104,11 +109,11 @@ Switch(config-if)# exit
 
 ```
 
-Below are the outputs of the commands `show vlan brief` (*Figure 2.4*) and `show interfaces trunk` (*Figure 2.5*) which verify the creation of the VLAN and the assignment of the trunk port respectively:
+Below are the outputs of the commands `show vlan brief` (*Figure 3.1*) and `show interfaces trunk` (*Figure 3.2*) which verify the creation of the VLAN and the assignment of the trunk port respectively:
 
 ![VLAN Brief](/assets/images/VLAN-brief.png)<br>
-*Figure 2.4*
+*Figure 3.1*
 
 ![Trunk](/assets/images/trunk.png)<br>
-*Figure 2.5*
+*Figure 3.2*
 
