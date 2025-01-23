@@ -55,7 +55,7 @@ The physical network was created in packet tracer according to the plan, devices
 
 Objective: **Configure basic networking to allow intra-subnet communication**
 
-The devices within each department were assigned static IP's and communication was successful:
+The devices within each department were assigned static IP's and communication was successful:  
 IT: 192.168.1.x  Gateway: 192.168.1.1  
 Management: 192.168.2.x  Gateway: 192.168.2.1  
 HR: 192.168.3.x  Gateway: 192.168.3.1  
@@ -126,9 +126,9 @@ Below are the outputs of the commands `show vlan brief` (*Figure 3.1*) and `show
 
 > Figure 3.1 confirms that VLAN 10 has been created and assigned to the appropriate ports which applies to VLAN 20 and 30 as well
 
->![Trunk](/assets/images/trunk.png)<br>
+![Trunk](/assets/images/trunk.png)<br>
 *Figure 3.2*
 
 > Figure 3.2 confims that the trunk port Fa3/1 has been correctly configured and is carrying traffic for all VLANs
 
-> Now that the VLANs have been successfully created and configured, the next step is to configure inter-vlan routing to enable communication between the departments.
+Now that the VLANs have been successfully created and configured, the next step is to configure inter-vlan routing to enable communication between the departments.
