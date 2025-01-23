@@ -24,7 +24,6 @@ Objective: Design the initial layout of the network
 A network diagram was created to represent a small office network with three departments: management, HR and IT.
 
 ![Network Plan](/assets/images/network-plan.png)
-<img src="https://username.github.io/repository-name/assets/images/network-plan.png" alt="Network Plan" width="60%" />
 *Figure 1: Network Diagram showing the planned layout of the office network*
 
 As displayed in figure 1, the network has 3 switches connected to a router, each switch is assigned to a department and has 2 PC's and a server per switch. The departments each have their own VLAN, subnets assigned as follows:
