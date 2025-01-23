@@ -6,6 +6,11 @@ permalink: /projects/Secure-Office-Network-Deployment/secure-office-network-depl
 
 This project showcases the design, configuration, and security of a small office network using Cisco Packet Tracer. The goal was to create a functional and secure network that simulates real-world scenarios while demonstrating key networking and cybersecurity skills.
 
+## Table of Contents
+- [1. Network Planning](#1-network-planning)
+- [2. Building the Network](#2-building-the-network)
+- [3. VLAN Configuration and Inter-VLAN Routing](#3-vlan-configuration-and-inter-vlan-routing)
+
 ## Objectives:
 - Network Planning & Setup
 - VLAN Configuration
@@ -61,7 +66,7 @@ HR: 192.168.3.x  Gateway: 192.168.3.1
 ![IT Ping](/assets/images/IT-ping.png)<br>
 *Figure 2.3: Shows a successful ping between 2 devices within the IT subnet*
 
-## 3 VLAN Configuration and Inter-VLAN Routing
+## 3. VLAN Configuration and Inter-VLAN Routing
  
 **Objective: Segment traffic using VLANs and enable communication between VLANs**
 
@@ -70,50 +75,60 @@ HR: 192.168.3.x  Gateway: 192.168.3.1
 **Objective: Segment the network into three VLANs for IT, Management and HR to improve traffic isolation**
 
 Configuration Details:  
-VLAN's were configured on their respective switches:
+VLANs were configured on their respective switches:
 - IT (VLAN 10): Ports FastEthernet0/1, FastEthernet 1/1, FastEthernet2/1  
 - Management (VLAN 20): Ports FastEthernet0/1, FastEthernet 1/1, FastEthernet2/1  
 - HR (VLAN 30): Ports FastEthernet0/1, FastEthernet 1/1, FastEthernet2/1  
 
-Trunk Ports: FastEthernet3/1 on each router, configured to carry traffic for all VLAN's to the router
+Trunk Ports: FastEthernet3/1 on each router, configured to carry traffic for all VLANs to the router  
+Without trunk ports, devices in different VLANs wouldn't be able to communicate.
 
-VLAN Creation:
+#### VLAN Creation:
 
 ```bash
 # Code for the creation of the IT VLAN 10
 Switch enable
 Switch# configure terminal
-Switch(config)# vlan 10
-Switch(config-vlan)# name IT
-Switch(config-vlan)# exit
+Switch(config)# vlan 10             # Creates VLAN 10
+Switch(config-vlan)# name IT        # Name VLAN 10 "IT"
+Switch(config-vlan)# exit           # Exit VLAN config mode
 
 ```
-Assign ports to the VLAN:
+
+#### Assign ports to the VLAN:
 
 ```bash
 # Port assignment for VLAN 10
-Switch(config)# interface range fastethernet0/1, fastethernet1/1, fastethernet2/1
-Switch(config-if-range)# switchport mode access
-Switch(config-if-range)# switchport access vlan 10
-Switch(config-if-range)# exit
+Switch(config)# interface range Fa0/1, Fa1/1, Fa2/1     # Enter interface config mode for the 3 ports
+Switch(config-if-range)# switchport mode access         # Change the port mode to access
+Switch(config-if-range)# switchport access vlan 10      # Assign the ports to VLAN 10  
+Switch(config-if-range)# exit                           # Exit interface config
 
 ```
 
-Configure the Trunk port:
+#### Configure the Trunk port:
 
 ```bash
-# Trunk port config for all VLAN's
-Switch(config)# interface fastethernet3/1
-Switch(config-if)# switchport mode trunk
-Switch(config-if)# exit
+# Trunk port config for all VLANs
+Switch(config)# interface Fa3/1             # Enter configuration interface for port Fa3/1
+Switch(config-if)# switchport mode trunk    # Configure Fa3/1 as a trunk
+Switch(config-if)# exit                     # Exit interface config mode
 
-```
+```  
+
+> This configuration sets FastEthernet3/1 as a trunk port to carry traffic for all VLANs ensuring interswitch routing and connectivity to the router.
+
 
 Below are the outputs of the commands `show vlan brief` (*Figure 3.1*) and `show interfaces trunk` (*Figure 3.2*) which verify the creation of the VLAN and the assignment of the trunk port respectively:
 
 ![VLAN Brief](/assets/images/VLAN-brief.png)<br>
 *Figure 3.1*
 
-![Trunk](/assets/images/trunk.png)<br>
+> Figure 3.1 confirms that VLAN 10 has been created and assigned to the appropriate ports which applies to VLAN 20 and 30 as well
+
+>![Trunk](/assets/images/trunk.png)<br>
 *Figure 3.2*
 
+> Figure 3.2 confims that the trunk port Fa3/1 has been correctly configured and is carrying traffic for all VLANs
+
+> Now that the VLANs have been successfully created and configured, the next step is to configure inter-vlan routing to enable communication between the departments.
