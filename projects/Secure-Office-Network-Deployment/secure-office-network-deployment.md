@@ -27,8 +27,8 @@ A network diagram was created to represent a small office network with three dep
 *Figure 1: Network Diagram showing the planned layout of the office network*
 
 As displayed in figure 1, the network has 3 switches connected to a router, each switch is assigned to a department and has 2 PC's and a server per switch. The departments each have their own VLAN, subnets assigned as follows:
-IT: 192.168.1.0/24
-Management: 192.168.2.0/24
+IT: 192.168.1.0/24  
+Management: 192.168.2.0/24  
 HR: 192.168.3.0/24
 
 ## 2. Building the Network
@@ -43,7 +43,7 @@ This section covers the physical setup of the network in packet tracer, the logi
 
 The physical network was created in packet tracer according to the plan, devices were connected using copper straight-through cables.
 
-![Network Design](/assets/images/network-design.png)
+![Network Design](/assets/images/network-design.png)<br>
 *Figure 2.1: The network built in packet tracer*
 
 ### 2.2 Configuring Basic Networking
@@ -51,9 +51,9 @@ The physical network was created in packet tracer according to the plan, devices
 Objective: **Configure basic networking to allow intra-subnet communication**
 
 The devices within each department were assigned static IP's and communication was successful:
-IT: 192.168.1.x  Gateway: 192.168.1.1
-Management: 192.168.2.x  Gateway: 192.168.2.1
-HR: 192.168.3.x  Gateway: 192.168.3.1
+IT: 192.168.1.x  Gateway: 192.168.1.1  
+Management: 192.168.2.x  Gateway: 192.168.2.1  
+HR: 192.168.3.x  Gateway: 192.168.3.1  
 
 ![IP Config](/assets/images/IP-config.png)<br>
 *Figure 2.2: Show's IP configuration of a PC within IT department*
@@ -65,11 +65,11 @@ HR: 192.168.3.x  Gateway: 192.168.3.1
 
 **Objective: Segment the network into three VLANs for IT, Management and HR to improve traffic isolation**
 
-Configuration Details:
+Configuration Details:  
 VLAN's were configured on their respective switches:
-- IT (VLAN 10) Ports FastEthernet0/1, FastEthernet 1/1, FastEthernet2/1
-- Management (VLAN 20) Ports FastEthernet0/1, FastEthernet 1/1, FastEthernet2/1
-- HR (VLAN 30) Ports FastEthernet0/1, FastEthernet 1/1, FastEthernet2/1
+- IT (VLAN 10) Ports FastEthernet0/1, FastEthernet 1/1, FastEthernet2/1  
+- Management (VLAN 20) Ports FastEthernet0/1, FastEthernet 1/1, FastEthernet2/1  
+- HR (VLAN 30) Ports FastEthernet0/1, FastEthernet 1/1, FastEthernet2/1  
 Trunk Ports: FastEthernet3/1 on each router, configured to carry traffic for all VLAN's to the router
 
 VLAN Creation:
