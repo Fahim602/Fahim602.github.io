@@ -133,4 +133,25 @@ Below are the outputs of the commands `show vlan brief` (*Figure 3.1*) and `show
 
 Now that the VLANs have been successfully created and configured, the next step is to configure inter-vlan routing to enable communication between the departments.
 
-### Inter-VLAN Routing
+### 3.2 Inter-VLAN Routing
+
+**Objective: Enable inter-VLAN communication through the configuration of a router**
+
+Router-on-a-stick will be used to enable communication between the VLANs. RoaS is an inter-VLAN routing method where a single router interface is divided into multiple logical interfaces (subinterfaces), each representing a VLAN. The router is connected to the switch via a single cable which allows it to logically communicate with all VLANs using 802.1q tagging. This tagging applies a unique identifier to each packet, ensuring it is associated with the correct VLAN.
+
+> **Troubleshooting:**
+Whilst configuring RoaS it was discovered that the 819HGW router doesn't support sub-interfaces, a critical feature for handling multiple VLANs on a single physical connection. As a result it was replaced with the Cisco 1841 router.
+
+> **Troubleshooting:**  
+During the setup of inter-switch trunk links, it was discovered that the Fa3/1 ports used as trunks on the HR and IT switches don't support fibre optic cables, whilst the Fa4/1 and Fa5/1 ports on the management switch only support fibre optic. As a result, the trunk ports were reassigned to improve compatibility.
+```bash
+# An example of the trunk reassigment on the IT switch
+IT-Switch(config)# interface fastethernet3/1
+IT-Switch(config-if)# no switchport mode trunk  # Remove trunk from Fa3/1
+
+IT-Switch(config)# interface fastethernet4/1
+IT-Switch(config-if)# switchport mode trunk     # Assign Fa4/1 as a trunk
+IT-Switch(config-if)# no shutdown
+```
+
+![Final Network](/assets/images/final-network.png)<br>
