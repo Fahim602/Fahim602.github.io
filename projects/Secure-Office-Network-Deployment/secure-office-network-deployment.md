@@ -90,6 +90,7 @@ Without trunk ports, devices in different VLANs wouldn't be able to communicate.
 #### VLAN Creation:
 
 ```bash
+
 # Code for the creation of the IT VLAN 10
 Switch enable
 Switch# configure terminal
@@ -102,6 +103,7 @@ Switch(config-vlan)# exit           # Exit VLAN config mode
 #### Assign ports to the VLAN:
 
 ```bash
+
 # Port assignment for VLAN 10
 Switch(config)# interface range Fa0/1, Fa1/1, Fa2/1     # Enter interface config mode for the 3 ports
 Switch(config-if-range)# switchport mode access         # Change the port mode to access
@@ -113,6 +115,7 @@ Switch(config-if-range)# exit                           # Exit interface config
 #### Configure the Trunk port:
 
 ```bash
+
 # Trunk port config for all VLANs
 Switch(config)# interface Fa3/1             # Enter configuration interface for port Fa3/1
 Switch(config-if)# switchport mode trunk    # Configure Fa3/1 as a trunk
@@ -146,6 +149,7 @@ Whilst configuring RoaS it was discovered that the 819HGW router doesn't support
 During the setup of inter-switch trunk links, it was discovered that the Fa3/1 ports used as trunks on the HR and IT switches don't support fibre optic cables, whilst the Fa4/1 and Fa5/1 ports on the management switch only support fibre optic. As a result, the trunk ports were reassigned to improve compatibility.
 
 ```bash
+
 # An example of the trunk reassigment on the IT switch
 IT-Switch(config)# interface fastethernet3/1
 IT-Switch(config-if)# no switchport mode trunk  # Remove trunk from Fa3/1
@@ -153,6 +157,33 @@ IT-Switch(config-if)# no switchport mode trunk  # Remove trunk from Fa3/1
 IT-Switch(config)# interface fastethernet4/1
 IT-Switch(config-if)# switchport mode trunk     # Assign Fa4/1 as a trunk
 IT-Switch(config-if)# no shutdown
+
 ```
+
+#### Creating Subinterfaces for VLANs:
+
+For RoaS to enable inter-VLAN communication, it is necessary to create subinterfaces on the router for each VLAN. Each subinterface acts as the gateway for it's respective VLAN and uses 802.1q encapsulation to tag traffic with the appropriate VLAN id.
+
+```bash
+
+# Example for VLAN 10 (IT)
+Router> enable
+Router# configure terminal
+Router(config)# interface fastethernet0/0.10                    # Create a subinterface for VLAN 10 on the router's Fa0/0 interface
+Router(config-subif)# encapsulation dot1Q 10                    # Enable 802.1q tagging for VLAN 10
+Router(config-subif)# ip address 192.168.1.1 255.255.255.0      # Assign the default gateway ip address for VLAN 10
+
+# Process repeated for VLAN 20 (Management) and VLAN 30 (HR)
+
+```
+| Subinterface  | VLAN ID | IP Address     | Purpose                |
+| :---------:   | :-----: | :---------:    |:----------:            |
+| Fa0/0.10      | 10      | 192.168.1.1/24 | IT Department          |
+| Fa0/0.20      | 20      | 192.168.2.1/24 | Managament Department  |
+| Fa0/0.30      | 30      | 192.168.3.1/24 | HR Department          |
+
+
+
+
 
 ![Final Network](/assets/images/final-network.png)<br>
