@@ -176,14 +176,41 @@ Router(config-subif)# ip address 192.168.1.1 255.255.255.0      # Assign the def
 # Process repeated for VLAN 20 (Management) and VLAN 30 (HR)
 
 ```
-| Subinterface  | VLAN ID | IP Address     | Purpose                |
-| :---------:   | :-----: | :---------:    |:----------:            |
-| Fa0/0.10      | 10      | 192.168.1.1/24 | IT Department          |
-| Fa0/0.20      | 20      | 192.168.2.1/24 | Managament Department  |
-| Fa0/0.30      | 30      | 192.168.3.1/24 | HR Department          |
+
+<table>
+  <thead>
+    <tr>
+      <th>Subinterface</th>
+      <th>VLAN ID</th>
+      <th>IP Address</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Fa0/0.10</td>
+      <td>10</td>
+      <td>192.168.1.1/24</td>
+      <td>IT Department</td>
+    </tr>
+    <tr>
+      <td>Fa0/0.20</td>
+      <td>20</td>
+      <td>192.168.2.1/24</td>
+      <td>Management Department</td>
+    </tr>
+    <tr>
+      <td>Fa0/0.30</td>
+      <td>30</td>
+      <td>192.168.3.1/24</td>
+      <td>HR Department</td>
+    </tr>
+  </tbody>
+</table>
+
+![Subinterfaces](/assets/images/subinterfaces.png)<br>
+*Figure 3.3: Successful creation of subinterfaces*
 
 
-
-
-
-![Final Network](/assets/images/final-network.png)<br>
+![Routing Table](/assets/images/IP-route.png)<br>
+*Figure 3.4: Routing table using command `show ip route`*
