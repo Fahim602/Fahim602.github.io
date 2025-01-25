@@ -139,11 +139,12 @@ Now that the VLANs have been successfully created and configured, the next step 
 
 Router-on-a-stick will be used to enable communication between the VLANs. RoaS is an inter-VLAN routing method where a single router interface is divided into multiple logical interfaces (subinterfaces), each representing a VLAN. The router is connected to the switch via a single cable which allows it to logically communicate with all VLANs using 802.1q tagging. This tagging applies a unique identifier to each packet, ensuring it is associated with the correct VLAN.
 
-> **Troubleshooting:**
+> **Troubleshooting:**  
 Whilst configuring RoaS it was discovered that the 819HGW router doesn't support sub-interfaces, a critical feature for handling multiple VLANs on a single physical connection. As a result it was replaced with the Cisco 1841 router.
 
 > **Troubleshooting:**  
 During the setup of inter-switch trunk links, it was discovered that the Fa3/1 ports used as trunks on the HR and IT switches don't support fibre optic cables, whilst the Fa4/1 and Fa5/1 ports on the management switch only support fibre optic. As a result, the trunk ports were reassigned to improve compatibility.
+
 ```bash
 # An example of the trunk reassigment on the IT switch
 IT-Switch(config)# interface fastethernet3/1
