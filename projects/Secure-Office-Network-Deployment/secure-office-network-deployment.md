@@ -35,7 +35,7 @@ A network diagram was created to represent a small office network with three dep
 ![Network Plan](/assets/images/network-plan.png)
 *Figure 1: Network Diagram showing the planned layout of the office network*
 
-As displayed in figure 1, the network has 3 switches connected to a router, each switch is assigned to a department and has 2 PC's and a server per switch. The departments each have their own VLAN, subnets assigned as follows:  
+As displayed in figure 1, the network has 3 switches connected to a router, each switch is assigned to a department and has 2 PCs and a server per switch. The departments each have their own VLAN, subnets assigned as follows:  
 IT: 192.168.1.0/24  
 Management: 192.168.2.0/24  
 HR: 192.168.3.0/24
@@ -65,7 +65,7 @@ Management: 192.168.2.x  Gateway: 192.168.2.1
 HR: 192.168.3.x  Gateway: 192.168.3.1  
 
 ![IP Config](/assets/images/IP-config.png)<br>
-*Figure 2.2: Show's IP configuration of a PC within IT department*
+*Figure 2.2: Shows IP configuration of a PC within IT department*
 
 ![IT Ping](/assets/images/IT-ping.png)<br>
 *Figure 2.3: Shows a successful ping between 2 devices within the IT subnet*
@@ -90,37 +90,31 @@ Without trunk ports, devices in different VLANs wouldn't be able to communicate.
 #### VLAN Creation:
 
 ```bash
-
 # Code for the creation of the IT VLAN 10
 Switch enable
 Switch# configure terminal
 Switch(config)# vlan 10             # Creates VLAN 10
 Switch(config-vlan)# name IT        # Name VLAN 10 "IT"
 Switch(config-vlan)# exit           # Exit VLAN config mode
-
 ```
 
 #### Assign ports to the VLAN:
 
 ```bash
-
 # Port assignment for VLAN 10
 Switch(config)# interface range Fa0/1, Fa1/1, Fa2/1     # Enter interface config mode for the 3 ports
 Switch(config-if-range)# switchport mode access         # Change the port mode to access
 Switch(config-if-range)# switchport access vlan 10      # Assign the ports to VLAN 10  
 Switch(config-if-range)# exit                           # Exit interface config
-
 ```
 
 #### Configure the Trunk port:
 
 ```bash
-
 # Trunk port config for all VLANs
 Switch(config)# interface Fa3/1             # Enter configuration interface for port Fa3/1
 Switch(config-if)# switchport mode trunk    # Configure Fa3/1 as a trunk
 Switch(config-if)# exit                     # Exit interface config mode
-
 ```  
 
 > This configuration sets FastEthernet3/1 as a trunk port to carry traffic for all VLANs ensuring interswitch routing and connectivity to the router.
@@ -142,14 +136,13 @@ Now that the VLANs have been successfully created and configured, the next step 
 
 Router-on-a-stick will be used to enable communication between the VLANs. RoaS is an inter-VLAN routing method where a single router interface is divided into multiple logical interfaces (subinterfaces), each representing a VLAN. The router is connected to the switch via a single cable which allows it to logically communicate with all VLANs using 802.1q tagging. This tagging applies a unique identifier to each packet, ensuring it is associated with the correct VLAN.
 
-> **Troubleshooting:**  
+> **Troubleshooting: Router Subinterface Issue**  
 Whilst configuring RoaS it was discovered that the 819HGW router doesn't support sub-interfaces, a critical feature for handling multiple VLANs on a single physical connection. As a result it was replaced with the Cisco 1841 router.
 
-> **Troubleshooting:**  
+> **Troubleshooting: Port Compatibility Issue**  
 During the setup of inter-switch trunk links, it was discovered that the Fa3/1 ports used as trunks on the HR and IT switches don't support fibre optic cables, whilst the Fa4/1 and Fa5/1 ports on the management switch only support fibre optic. As a result, the trunk ports were reassigned to improve compatibility.
 
 ```bash
-
 # An example of the trunk reassigment on the IT switch
 IT-Switch(config)# interface fastethernet3/1
 IT-Switch(config-if)# no switchport mode trunk  # Remove trunk from Fa3/1
@@ -157,15 +150,13 @@ IT-Switch(config-if)# no switchport mode trunk  # Remove trunk from Fa3/1
 IT-Switch(config)# interface fastethernet4/1
 IT-Switch(config-if)# switchport mode trunk     # Assign Fa4/1 as a trunk
 IT-Switch(config-if)# no shutdown
-
 ```
 
 #### Creating Subinterfaces for VLANs:
 
-For RoaS to enable inter-VLAN communication, it is necessary to create subinterfaces on the router for each VLAN. Each subinterface acts as the gateway for it's respective VLAN and uses 802.1q encapsulation to tag traffic with the appropriate VLAN id.
+For RoaS to enable inter-VLAN communication, it is necessary to create subinterfaces on the router for each VLAN. Each subinterface acts as the gateway for its respective VLAN and uses 802.1q encapsulation to tag traffic with the appropriate VLAN id.
 
 ```bash
-
 # Example for VLAN 10 (IT)
 Router> enable
 Router# configure terminal
@@ -174,8 +165,8 @@ Router(config-subif)# encapsulation dot1Q 10                    # Enable 802.1q 
 Router(config-subif)# ip address 192.168.1.1 255.255.255.0      # Assign the default gateway ip address for VLAN 10
 
 # Process repeated for VLAN 20 (Management) and VLAN 30 (HR)
-
 ```
+> Note: 802.1q tagging is essential for RoaS as it ensures that packets are routed correctly between VLANs
 
 <table>
   <thead>
@@ -214,3 +205,55 @@ Router(config-subif)# ip address 192.168.1.1 255.255.255.0      # Assign the def
 
 ![Routing Table](/assets/images/IP-route.png)<br>
 *Figure 3.4: Routing table using command `show ip route`*
+
+> The router has now been successfully configured with subinterfaces for VLANs 10, 20 and 30. Each subinterface is tagged with its own VLAN and assigned a default gateway IP address. The routing table shows that subnets 192.168.1.0/24, 192.168.2.0/24 and 192.168.3.0/24 are directly connected to subinterfaces Fa0/0.10, Fa0/0.20 and Fa0/0.30 respectively, this ensures that inter-VLAN communication is possible.
+
+#### Reconfigure Trunk Ports due to Compatibility Issues
+
+Trunk ports were configured previously in [Configure the Trunk Port](#configure-the-trunk-port), however these must be reconfigured due to compatibility issues.
+
+```bash
+# Process to reassign trunks on IT and HR switches
+Switch# configure terminal
+Switch(config) interface fastethernet3/1
+Switch(config-if) no switchport mode trunk    # Disable Fa3/1 as trunk
+Switch(config-if) exit
+# Fa4/1 and Fa5/1 then assigned as trunks
+```
+
+```bash
+# Assigning trunk ports on Management switch
+Switch(config)# interface fastethernet4/1
+Switch(config-if)# switchport mode trunk
+Switch(config-if)# switchport trunk allowed vlan 10,20,30
+Switch(config-if)# no shutdown
+
+Switch(config)# interface fastethernet5/1
+Switch(config-if)# switchport mode trunk
+Switch(config-if)# switchport trunk allowed vlan 10,20,30
+Switch(config-if)# no shutdown
+```
+> Note: Management switch now has 3 active trunk ports, Fa3/1, Fa4/1 and Fa5/1. The other departments have 2, Fa4/1 and Fa5/1
+
+![Trunk Ports](/assets/images/trunks.png)<br>
+*Figure 3.5: Trunk ports configured on management switch and VLANs allowed access*
+
+Trunk ports have now been successfully configured on the Management switch for VLANs 10, 20 and 30, thus ensuring proper VLAN tagging and traffic flow between the router and switches.
+
+#### Inter-VLAN Communication Testing
+
+Inter-VLAN communication was tested by pinging devices in different VLANs.
+
+![IT to Management Ping](/assets/images/VLAN-ping2.png)<br>
+*Figure 3.6: A ping from IT PC-1 (192.168.1.10) in VLAN 10 to Management PC-1 (192.168.2.10) VLAN 20*
+
+![HR to IT ping](/assets/images/VLAN-ping1.png)<br>
+*Figure 3.7: A ping from HR PC-1 (192.168.3.10) in VLAN 30 to IT PC-1 (192.168.1.10) VLAN 10*
+
+As shown above, inter-VLAN communication and routing is working as intended, the router has successfully forwarded traffic between VLANs using the subinterfaces.
+
+![Updated Network](/assets/images/updated-network.png)
+*Figure 3.8: An annotated image of the network build at this stage*
+
+Figure 3.8 displays the updated network topology with the RoaS connection, the trunk ports are labelled along with the information about each department.
+
