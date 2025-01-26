@@ -24,7 +24,12 @@ This project showcases the design, configuration, and security of a small office
 ## Skills Demonstrated:
 - Networking fundamentals, VLANs, and IP addressing
 - Security protocols like ACLs, Port Security, and SSH
-- Troubleshooting and mitigation of network issues
+- Troubleshooting and mitigation of network issues  
+<br><br>
+
+---  
+
+<br>
 
 ## 1. Network Planning
 
@@ -39,6 +44,12 @@ As displayed in figure 1, the network has 3 switches connected to a router, each
 IT: 192.168.1.0/24  
 Management: 192.168.2.0/24  
 HR: 192.168.3.0/24
+<br><br>
+
+---  
+
+<br>
+
 
 ## 2. Building the Network
 
@@ -69,6 +80,12 @@ HR: 192.168.3.x  Gateway: 192.168.3.1
 
 ![IT Ping](/assets/images/IT-ping.png)<br>
 *Figure 2.3: Shows a successful ping between 2 devices within the IT subnet*
+<br><br>
+
+---  
+
+<br>
+
 
 ## 3. VLAN Configuration and Inter-VLAN Routing
  
@@ -256,4 +273,114 @@ As shown above, inter-VLAN communication and routing is working as intended, the
 *Figure 3.8: An annotated image of the network build at this stage*
 
 Figure 3.8 displays the updated network topology with the RoaS connection, the trunk ports are labelled along with the information about each department.
+<br><br>
 
+---  
+
+<br>
+
+
+## 4. DHCP Configuration
+
+**Objective: Automate IP address assignment across the network for devices in VLANs, IT, Management and HR**
+
+Dynamic Host Configuration Protocol (DHCP) is a protocol used to automatically assign IP addresses and other network configuration parameters (e.g. subnet mask, gateway). As a result of this, DHCP is an incredibly useful tool in networking, it has several key benefits:
+1. Automation:
+- DHCP eliminates the need to manually assign IPs, increasing efficiency and reducing errors.
+2. Flexibility and Scalability:
+- Devices can easily join the network and obtain an IP, very useful for large scale networks.
+3. Dynamic Updates:
+- Reclaims unused IPs when devices leave the network, ensuring efficient utilisation of IPs.
+4. Centralised Management:
+- IP assignments can be controlled from a single DHCP server
+
+In this project, DHCP was configured on the router to automatically assign IP addresses to devices in each of the VLANs. While this isn't strictly necessary for a network of this size, I decided to implement it, for the sake of scalability, adding a touch of complexity and getting practical experience with dynamic IP address allocation.
+
+**DHCP Configuration Plan:**
+
+<table>
+  <thead>
+    <tr>
+      <th>VLAN</th>
+      <th>Subnet</th>
+      <th>Excluded IPs</th>
+      <th>DHCP Pool Range</th>
+      <th>Gateway</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>IT (VLAN 10)</td>
+      <td>192.168.1.0/24</td>
+      <td>192.168.1.1 – 192.168.1.11</td>
+      <td>192.168.1.12 – 192.168.1.254</td>
+      <td>192.168.1.1</td>
+    </tr>
+    <tr>
+      <td>Management (VLAN 20)</td>
+      <td>192.168.2.0/24</td>
+      <td>192.168.2.1 – 192.168.2.11</td>
+      <td>192.168.2.12 – 192.168.2.254</td>
+      <td>192.168.2.1</td>
+    </tr>
+    <tr>
+      <td>HR (VLAN 30)</td>
+      <td>192.168.3.0/24</td>
+      <td>192.168.3.1 – 192.168.3.11</td>
+      <td>192.168.3.12 – 192.168.3.254</td>
+      <td>192.168.3.1</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Note:</strong> Excluded IP ranges are reserved for static assignments to critical devices like servers and routers.</p>
+<br><br>
+
+---
+
+<br>
+
+### DHCP Configuration Steps
+
+#### Excluding Static IPs
+
+```bash
+Router(config)# ip dhcp excluded-address 192.168.1.1 192.168.1.11    # Specifies the address range to exclude
+Router(config)# ip dhcp excluded-address 192.168.2.1 192.168.2.11
+Router(config)# ip dhcp excluded-address 192.168.3.1 192.168.3.11
+```
+
+This ensures that static IP addresses are not automatically assigned by DHCP.
+
+![Excluded IP range](/assets/images/excluded-dhcp.png)<br>
+*Figure 4.1: Verifies the excluded static IP address range*
+
+#### Create DHCP pools for each VLAN
+
+```bash
+Router(config)# ip dhcp pool VLAN10                     
+Router(dhcp-config)# network 192.168.1.0 255.255.255.0      # Define the subnet
+Router(dhcp-config)# default-router 192.168.1.1             # Gateway for this VLAN
+Router(dhcp-config)# dns-server 8.8.8.8                     # Specify DNS server
+Router(dhcp-config)# exit
+
+# Process repeated for vlan 20 and 30
+```
+
+> Note: DNS server specification is optional here but will be relevant when working with NAT. 8.8.8.8 is the Google Public DNS.
+
+#### DHCP Testing
+
+To test the DHCP IP allocation, two new PC's were added to the network, one to the IT department(VLAN 10), and the other to HR (VLAN 30). The PC's were set to DHCP IP allocation, shown below are the results.
+
+[IT-PC DHCP](assets/images/it-pc-dhcp.png)<br>
+*Figure 4.2: Clearly displays DHCP allocation from the PC configuration page, IP outside of excluded range*
+
+The systems were able to ping their respective gateway addresses and also were capable of intra/inter VLAN communication.  
+[DHCP Ping](assets/images/it-dhcp-ping.png)<br>
+*Figure 4.3: Ping from PC in IT VLAN with auto assigned DHCP IP to it's gateway, confirming network connectivity*
+
+By using the command `show ip dhcp binding` we are also able to see the devices that have been dynamically allocated IPs.   
+[DHCP Binding](assets/images/dhcp-binding.png)<br>
+*Figure 4.4: Output of `show ip dhcp binding` which displays the IPs allocated and hardware addresses of the devices*
+
+> The DHCP server was successfully configured to dynamically allocate IP addresses whilst ignoring IPs within the excluded range. Devices were tested for connectivity and passed.
