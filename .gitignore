@@ -1,0 +1,9 @@
+# Ignore the generated _site folder (Jekyll output)
+_site/
+
+# Ignore log files and temporary files
+*.log
+*.tmp
+
+# Ignore Ruby dependency files
+Gemfile.lock
