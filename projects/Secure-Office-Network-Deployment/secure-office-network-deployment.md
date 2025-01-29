@@ -14,6 +14,12 @@ This project showcases the design, configuration, and security of a small office
 - [3. VLAN Configuration and Inter-VLAN Routing](#3-vlan-configuration-and-inter-vlan-routing)
   - [3.1 VLAN Configuration](#31-vlan-configuration)
   - [3.2 Inter-VLAN Routing](#32-inter-vlan-routing)
+- [4. DHCP Configuration](#4-dhcp-configuration)
+- [5. NAT Configuration](#5-nat-configuration)
+  - [5.1 Configuring NAT](#51-configuring-nat)
+  - [5.2 Configuring Test Endpoint](#52-configuring-test-endpoint)
+  - [5.3 Configuring Routing](#53-configuring-routing)
+  - [5.4 Testing](#54-testing)
 
 ## Objectives:
 - Network Planning & Setup
@@ -372,15 +378,195 @@ Router(dhcp-config)# exit
 
 To test the DHCP IP allocation, two new PC's were added to the network, one to the IT department(VLAN 10), and the other to HR (VLAN 30). The PC's were set to DHCP IP allocation, shown below are the results.
 
-[IT-PC DHCP](assets/images/it-pc-dhcp.png)<br>
+![IT-PC DHCP](assets/images/it-pc-dhcp.png)<br>
 *Figure 4.2: Clearly displays DHCP allocation from the PC configuration page, IP outside of excluded range*
 
 The systems were able to ping their respective gateway addresses and also were capable of intra/inter VLAN communication.  
-[DHCP Ping](assets/images/it-dhcp-ping.png)<br>
+![DHCP Ping](assets/images/it-dhcp-ping.png)<br>
 *Figure 4.3: Ping from PC in IT VLAN with auto assigned DHCP IP to it's gateway, confirming network connectivity*
 
 By using the command `show ip dhcp binding` we are also able to see the devices that have been dynamically allocated IPs.   
-[DHCP Binding](assets/images/dhcp-binding.png)<br>
+![DHCP Binding](assets/images/dhcp-binding.png)<br>
 *Figure 4.4: Output of `show ip dhcp binding` which displays the IPs allocated and hardware addresses of the devices*
 
 > The DHCP server was successfully configured to dynamically allocate IP addresses whilst ignoring IPs within the excluded range. Devices were tested for connectivity and passed.
+<br><br>
+
+---
+
+<br>
+
+## 5. NAT Configuration
+
+**Objective: Enable devices within internal network to access external networks by configuring NAT on the router**
+
+Network Address Translation (NAT) is used to modify packets as they pass through a router. It's a method to map multiple private IP addresses within a network onto a public IP address, enabling communication with external networks whilst maintaining the security of the internal network.
+There are several types of NAT:
+1. Static NAT - One private IP is mapped to one public IP (1-1 Translation)
+2. Dynamic NAT - A pool of public IP's is assigned dynamically to private IPs
+3. Dynamic NAT with PAT - Multiple devices share one public IP by using different ports
+
+For this project I will be using Dynamic NAT with PAT as it provides scalability and an efficient usage of ip addresses. For the purpose of testing NAT I will also be setting up an "ISP" router to simulate an external network connection and creating a "Google" server (8.8.8.8) to act as a test endpoint.
+
+<table>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Configuration</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Internal Networks</td>
+      <td>192.168.1.0/24 (IT), 192.168.2.0/24 (Management), 192.168.3.0/24 (HR)</td>
+    </tr>
+    <tr>
+      <td>Public IP</td>
+      <td>203.0.113.1 (Router's Fa0/1 interface)</td>
+    </tr>
+    <tr>
+      <td>NAT Type</td>
+      <td>Dynamic NAT with PAT</td>
+    </tr>
+    <tr>
+      <td>Access Control List (ACL)</td>
+      <td>Permit traffic from internal networks (192.168.1.0, 192.168.2.0, 192.168.3.0)</td>
+    </tr>
+  </tbody>
+</table>
+
+> Internal VLANs (IT, Management and HR) will share one public IP (203.0.113.1)  
+PAT assigns unique port numbers to track sessions
+
+
+### 5.1 Configuring NAT
+
+**Objective: Configure Dynamic NAT with PAT to allow communication between devices in internal VLANs and external networks**
+
+#### Define NAT Outside and Inside Interfaces
+
+To enable NAT, the internal VLAN subinterfaces were defined as inside interfaces, while the public facing Fa0/1 interface (connected to the ISP) was defined as outside.
+
+```bash
+Router(config)# interface fastethernet0/0
+Router(config-if)# ip nat inside                # Defines Fa0/0 as inside (internal network)
+
+Router(config)# interface fastethernet0/0.10
+Router(config-subif)# ip nat inside             # IT VLAN
+
+Router(config)# interface fastethernet0/0.20
+Router(config-subif)# ip nat inside             # Management VLAN
+
+Router(config)# interface fastethernet0/0.30
+Router(config-subif)# ip nat inside             # HR VLAN
+
+Router(config)# interface fastethernet0/1
+Router(config-if)# ip nat outside               # Defines Fa0/1 as outside (external network)
+```
+
+
+![NAT-interfaces](/assets/images/NAT-stats.png) <br>
+*Figure 5.1: Output displays that inside and outside interfaces have been correctly assigned*
+
+#### Create an ACL to Permit Internal Traffic
+
+An access control list was created to specify which internal subnets are allowed to be translated using NAT.
+
+```bash
+Router(config)# access-list 1 permit 192.168.1.0 0.0.0.255    # IT VLAN
+Router(config)# access-list 1 permit 192.168.2.0 0.0.0.255    # Management VLAN
+Router(config)# access-list 1 permit 192.168.3.0 0.0.0.255    # HR VLAN
+```
+
+> The ACL configured above permits NAT only for internal subnets, preventing unauthorised traffic from being translated
+
+#### Configure NAT Overload (PAT)
+
+Links ACL to the public facing interface and enable NAT overload
+
+```bash
+Router(config)# ip nat inside source list 1 interface fastethernet0/1 overload
+```
+This command will translate traffic from all devices in the VLANs to the public facing IP assigned to Fa0/1 (203.0.113.1)
+
+### 5.2 Configuring Test Endpoint
+
+**Objective: Setup an ISP router and Google server to simulate an external connection for the purpose of testing NAT**
+
+**Configuring ISP router:**
+
+```bash
+ISP-Router(config)# interface fastethernet0/0                  # Interface connected to network router
+ISP-Router(config-if)# ip address 203.0.113.2 255.255.255.252  # Public IP facing the router
+ISP-Router(config-if)# no shutdown
+
+ISP-Router(config)# interface fastethernet0/1                  # Interface connected to "Google" server 
+ISP-Router(config-if)# ip address 8.8.8.1 255.255.255.0        # Acts as the "Google" gateway
+ISP-Router(config-if)# no shutdown
+
+ISP-Router(config)# ip route 0.0.0.0 0.0.0.0 203.0.113.1       # Default route to the internal router
+```
+
+**Configuring Google server:**
+
+```bash
+Google-Server(config)# ip address 8.8.8.8 255.255.255.0
+Google-Server(config)# gateway 8.8.8.1
+```
+
+### 5.3 Configuring Routing
+
+**Objective: Configure default and return routes between main router and ISP**
+
+For NAT to work effectively, the router must know where to forward external traffic. There must be a default route, which forwards unknown traffic to the ISP router, and a return route, which sends replies back to the main router. Static routing was chosen over dynamic routing for this project as this is a network with a simple, fixed structure. For a larger network a dynamic routing protocol like OSPF would be preferable to allow automation.
+
+```bash
+Router(config)# ip route 0.0.0.0 0.0.0.0 203.0.113.2
+```
+*Configures a static route on the main router*
+
+```bash
+ISP-Router(config)# ip route 192.168.1.0 255.255.255.0 203.0.113.1
+ISP-Router(config)# ip route 192.168.2.0 255.255.255.0 203.0.113.1
+ISP-Router(config)# ip route 192.168.3.0 255.255.255.0 203.0.113.1
+```
+*Configures several return routes corresponding to the subnets on the ISP router*
+
+> NAT has now been configured correctly and routing should be working effectively
+
+### 5.4 Testing
+
+
+
+To verify NAT is working correctly, a ping must be made from one of the internal network devices to the external server (8.8.8.8). From there the IP translations can be verified.
+
+![No-NAT ping](assets/images/noNAT-ping.png)<br>
+*Figure 5.2: A ping between a PC and the 8.8.8.8 server before NAT was successfully configured*
+
+![NAT Ping](assets/images/IT-NAT-ping.png)<br>
+*Figure 5.3: A ping from a PC (192.168.1.10) in the IT department to the 8.8.8.8 server after NAT has been configured*
+
+As shown above, once NAT and routing were successfully configured, the devices were able to ping the google server.
+
+We can verify that NAT is translating IP's by using the `show IP nat translation` command. The results are shown below.
+
+![NAT Translation](assets/images/NAT-translations.png)<br>
+*Figure 5.4: Results of IP translation by NAT into public IP (203.0.113.1)*
+
+We can see from the results that NAT successfully translated two different IP addresses - 192.168.1.10 and 192.168.1.12 - into a singular public facing IP (203.0.113.1) followed by a port number. This verifies that Dynamic NAT with PAT has been configured correctly and multiple devices can now connect externally while using the same global IP.
+<br><br>
+
+---
+
+<br>
+
+Here is the updated network topology after the addition of the newer components:  
+
+![Updated Network](assets/images/NAT-network.png)
+<br><br>
+
+---
+
+<br>
+
+
