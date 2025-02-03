@@ -24,6 +24,7 @@ This project showcases the design, configuration, and security of a small office
   - [6.1 Port Security](#61-port-security)
   - [6.2 Access Control Lists (ACLs)](#62-access-control-lists-acls)
   - [6.3 Secure Management](#63-secure-management)
+- [7. Conclusion](#7-conclusion)
 
 ## Objectives:
 - Network Planning & Setup
@@ -161,7 +162,7 @@ Now that the VLANs have been successfully created and configured, the next step 
 
 **Objective: Enable inter-VLAN communication through the configuration of a router**
 
-Router-on-a-stick will be used to enable communication between the VLANs. RoaS is an inter-VLAN routing method where a single router interface is divided into multiple logical interfaces (subinterfaces), each representing a VLAN. The router is connected to the switch via a single cable which allows it to logically communicate with all VLANs using 802.1q tagging. This tagging applies a unique identifier to each packet, ensuring it is associated with the correct VLAN.
+Router-on-a-Stick will be used to enable communication between the VLANs. RoaS is an inter-VLAN routing method where a single router interface is divided into multiple logical interfaces (subinterfaces), each representing a VLAN. The router is connected to the switch via a single cable which allows it to logically communicate with all VLANs using 802.1q tagging. This tagging applies a unique identifier to each packet, ensuring it is associated with the correct VLAN.
 
 > **Troubleshooting: Router Subinterface Issue**  
 Whilst configuring RoaS it was discovered that the 819HGW router doesn't support sub-interfaces, a critical feature for handling multiple VLANs on a single physical connection. As a result it was replaced with the Cisco 1841 router.
@@ -821,6 +822,25 @@ Once again, the PCs can remote into the router and perform remote management as 
 
 <br>
 
+## 7. Conclusion
+
+This project was successful in creating a functional office network with several key network features and the implementation of a range of critical security measures.  
+
+Aside from technical achievements, the project was an **excellent learning experience**, allowing me to familiarise myself with networking concepts and security best practices in a controlled, simulated environment.  
+
+### **Key Accomplishments**
+- **Network Segmentation:** VLANs were used to separate departments, improving security through isolation, and performance
+- **Inter-VLAN Routing:** Configured **Router on a Stick (RoaS)** with 802.1q encapsulation to enable controlled communication
+- **DHCP Configuration:** IPs were automatically assigned whilst reserving a range of static IPs for critical services
+- **Network Address Translation:** IPs were translated when connecting to external networks, allowing secure access while preserving private addresses
+- **Security Enhancements:**
+  - **Port Security:** Prevented unauthorised device connection
+  - **Access Control Lists:** Restricted access to critical services in other departments, improving security and isolation
+  - **SSH Implementation:** Secured remote management by replacing Telnet with encrypted SSH access
+
+This project provided hands-on experience in **network design, configuration, and security implementation**. The final result is a network that is scalable, maintainable and secure against common threats.
+
+The knowledge and skills gained throughout this project have allowed me to develop a solid foundation in network security and prepared me to effectively tackle more complex cybersecurity and networking challenges in the future.
 
 
 
